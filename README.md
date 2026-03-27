@@ -2,7 +2,7 @@
 **Visual Studio: Ultra Studios**
 
 Project Overview
-This project is a high fidelity 3D kinetic showcase for the Lumix camera series. It focuses on achieving a professional, manual focus aesthetic through optimized code.
+This project is a high fidelity 3D kinetic showcase for the Lumix Pro Headset series. It focuses on achieving a professional, manual focus aesthetic through optimized code.
 
 Purpose & Motivation
 The creation of **Lumix Pro 3D** serves two primary goals:
