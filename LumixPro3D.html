@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LUMIX - 360 Kinetic Orbit</title>
+    
+    <!-- Dependencies -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://unpkg.com/@studio-freight/lenis@1.0.33/dist/lenis.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;900&display=swap');
+        
+        body {
+            background-color: #ffffff;
+            color: #000000;
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        section {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 0 10%;
+            position: relative;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .kinetic-line {
+            width: 0;
+            height: 1px;
+            background: rgba(0,0,0,0.1);
+            margin: 2rem 0;
+            transition: width 1s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .line-red {
+            background: #dc2626;
+            height: 2px;
+        }
+
+        #loader {
+            position: fixed;
+            inset: 0;
+            z-index: 1000;
+            background: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: transform 1.5s cubic-bezier(0.9, 0, 0.1, 1);
+        }
+
+        ::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="loader">
+        <div class="text-[8vw] font-black italic tracking-tighter uppercase">LUMIX.</div>
+    </div>
+
+    <canvas id="main-canvas"></canvas>
+    <header class="fixed top-0 w-full p-8 md:p-12 flex justify-between items-center z-[100] pointer-events-none">
+        <div class="text-2xl font-black italic tracking-tighter uppercase text-black pointer-events-auto cursor-pointer">
+            LU<span class="text-red-600">MIX</span>
+        </div>
+        <div class="text-[7px] font-bold tracking-[0.5em] uppercase opacity-40 text-black">
+            360 PRO SERIES
+        </div>
+    </header>
+
+    <main>
+        <section class="flex flex-col justify-center">
+            <div class="max-w-4xl">
+                <h1 class="reveal-text text-[9vw] font-black leading-[0.85] tracking-tighter uppercase italic">
+                    PURE<br/><span class="text-red-600">STASIS.</span>
+                </h1>
+                <div class="kinetic-line line-red"></div>
+                <p class="reveal-sub text-[9px] font-black tracking-[0.8em] opacity-30 uppercase italic"> Anti Distortion Mode Active.</p>
+            </div>
+        </section>
+
+        <section class="flex justify-end text-right">
+            <div class="max-w-md">
+                <div class="kinetic-line ml-auto"></div>
+                <h2 class="reveal-text text-4xl font-black italic uppercase tracking-tighter mb-6 leading-none">
+                    ZERO <span class="text-red-600 text-5xl">DISTORTION.</span>
+                </h2>
+                <p class="reveal-sub text-black/40 text-[10px] font-bold uppercase tracking-widest leading-relaxed">
+                    Refined geometry engineered for absolute visual precision and acoustic fidelity from every angle.
+                </p>
+            </div>
+        </section>
+
+        <section>
+            <div class="max-w-md">
+                <div class="kinetic-line"></div>
+                <h2 class="reveal-text text-4xl font-black italic uppercase tracking-tighter mb-6 leading-none">
+                    ANATOMIC <span class="text-red-600 text-5xl">OVAL.</span>
+                </h2>
+                <p class="reveal-sub text-black/40 text-[10px] font-bold uppercase tracking-widest leading-relaxed">
+                    Earcups designed with a 1:1 human ear ratio to ensure perfect isolation and professional aesthetics.
+                </p>
+            </div>
+        </section>
+
+        <section class="flex flex-col justify-center items-center text-center">
+            <h2 class="reveal-text text-[12vw] font-black italic uppercase tracking-tighter leading-none mb-12 opacity-5">LUMIX</h2>
+            <div class="kinetic-line line-red !w-32 mx-auto mb-12"></div>
+            <button class="pointer-events-auto px-16 py-7 bg-black text-white font-black uppercase tracking-[1em] text-[10px] hover:bg-red-600 transition-all duration-700 rounded-full hover:scale-105 active:scale-95 shadow-2xl">
+            GET NOW
+            </button>
+        </section>
+    </main>
+
+    <footer class="p-12 text-[7px] font-bold uppercase tracking-[1em] opacity-20 text-center relative z-10">
+        LUMIX ACOUSTICS LABS 2026
+    </footer>
+
+    <div class="fixed top-0 right-0 w-[3px] h-full bg-black/[0.03] z-[60]">
+        <div id="scroll-bar" class="w-full bg-red-600 origin-top scale-y-0 h-full"></div>
+    </div>
+
+    <script>
+        const lenis = new Lenis({
+            duration: 1.2,
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+            smoothWheel: true
+        });
+
+        function raf(time) {
+            lenis.raf(time);
+            requestAnimationFrame(raf);
+        }
+        requestAnimationFrame(raf);
+
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0xffffff);
+
+        const camera = new THREE.PerspectiveCamera(22, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const baseRadius = 80;
+        camera.position.set(0, 0, baseRadius);
+
+        const renderer = new THREE.WebGLRenderer({
+            canvas: document.querySelector('#main-canvas'),
+            antialias: true,
+            alpha: true
+        });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+
+        const ambient = new THREE.AmbientLight(0xffffff, 1.5);
+        scene.add(ambient);
+        
+        const spotLight = new THREE.SpotLight(0xffffff, 1.2);
+        spotLight.position.set(50, 100, 50);
+        scene.add(spotLight);
+
+        const modelGroup = new THREE.Group();
+        scene.add(modelGroup);
+
+        const bodyMat = new THREE.MeshStandardMaterial({ 
+            color: 0x050505, 
+            metalness: 0.8, 
+            roughness: 0.2 
+        });
+
+        const cushionMat = new THREE.MeshStandardMaterial({ 
+            color: 0x111111, 
+            metalness: 0.1, 
+            roughness: 0.8 
+        });
+        
+        const glowRed = new THREE.MeshStandardMaterial({ 
+            color: 0xff0000, 
+            emissive: 0xff0000, 
+            emissiveIntensity: 10 
+        });
+
+        const createCup = (x) => {
+            const cupGroup = new THREE.Group();
+            
+            const housingGeo = new THREE.SphereGeometry(2.5, 64, 64);
+            const housing = new THREE.Mesh(housingGeo, bodyMat);
+            housing.scale.set(0.5, 1.3, 1.1); 
+            
+            const cushionGeo = new THREE.SphereGeometry(2.4, 64, 64);
+            const cushion = new THREE.Mesh(cushionGeo, cushionMat);
+            cushion.scale.set(0.3, 1.25, 1.05);
+            cushion.position.x = x > 0 ? -0.8 : 0.8;
+
+            const logo = new THREE.Group();
+            const vLine = new THREE.Mesh(new THREE.BoxGeometry(0.12, 1.0, 0.12), glowRed);
+            const hLine = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.12, 0.12), glowRed);
+            hLine.position.set(0.14, -0.44, 0);
+            logo.add(vLine, hLine);
+            
+            const logoPos = x > 0 ? 1.4 : -1.4;
+            logo.position.set(logoPos, 0, 0);
+            logo.rotation.y = x > 0 ? Math.PI/2 : -Math.PI/2;
+
+            const ring = new THREE.Mesh(new THREE.TorusGeometry(2.4, 0.04, 16, 100), glowRed);
+            ring.rotation.y = Math.PI/2;
+            ring.scale.y = 1.3;
+            ring.position.x = x > 0 ? 0.1 : -0.1;
+
+            cupGroup.add(housing, cushion, logo, ring);
+            cupGroup.position.x = x;
+            return cupGroup;
+        };
+
+        modelGroup.add(createCup(-7.5), createCup(7.5));
+
+        const bandCurve = new THREE.QuadraticBezierCurve3(
+            new THREE.Vector3(-7.5, 3.2, 0),
+            new THREE.Vector3(0, 14, 0),
+            new THREE.Vector3(7.5, 3.2, 0)
+        );
+        const headband = new THREE.Mesh(
+            new THREE.TubeGeometry(bandCurve, 64, 1.0, 32, false), 
+            bodyMat
+        );
+        modelGroup.add(headband);
+
+        gsap.registerPlugin(ScrollTrigger);
+        const orbitData = { angle: 0, height: 0, zoom: baseRadius };
+
+        const mainTl = gsap.timeline({
+            scrollTrigger: {
+                trigger: "body",
+                start: "top top",
+                end: "bottom bottom",
+                scrub: 2,
+            }
+        });
+
+        mainTl.to(orbitData, { 
+            angle: Math.PI * 2,
+            height: 10, 
+            zoom: 60, 
+            ease: "none" 
+        });
+
+        gsap.to("#scroll-bar", {
+            scaleY: 1,
+            ease: "none",
+            scrollTrigger: {
+                trigger: "body",
+                start: "top top",
+                end: "bottom bottom",
+                scrub: true
+            }
+        });
+
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            camera.position.x = Math.sin(orbitData.angle) * orbitData.zoom;
+            camera.position.z = Math.cos(orbitData.angle) * orbitData.zoom;
+            camera.position.y = orbitData.height;
+            camera.lookAt(0, 0, 0);
+
+            modelGroup.rotation.y += 0.0015;
+            modelGroup.position.y = Math.sin(Date.now() * 0.001) * 0.3;
+
+            renderer.render(scene, camera);
+        }
+
+        window.onload = () => {
+            setTimeout(() => {
+                const loader = document.getElementById('loader');
+                if (loader) loader.style.transform = 'translateY(-100%)';
+                ScrollTrigger.refresh();
+                animate();
+            }, 800);
+        };
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            ScrollTrigger.refresh();
+        });
+    </script>
+</body>
+<!-- 
+          SIGNATURE:
+    [AUTHOR]: Ultra Studios
+    [PROJECT]: LUMIX 360 PRO
+    [STATUS]: DEPLOYED V2.2
+ This signature is hidden from the preview and only visible in source code.
+-->
+</html>
