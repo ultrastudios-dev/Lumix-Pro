@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LUMIX CINEMATIC V2.3 PRECISE</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;900&display=swap" rel="stylesheet">
+    
+    <!-- Libraries - Updated Three.js to latest for CapsuleGeometry support -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.152.2/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://unpkg.com/lenis@1.1.18/dist/lenis.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        body {
+            background-color: #ffffff;
+            color: #000000;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            margin: 0;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* ANTI-KAKU LOADER */
+        #loader-overlay {
+            position: fixed;
+            inset: 0;
+            background: #000;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 1.8s cubic-bezier(0.85, 0, 0.15, 1);
+        }
+
+        #loader-text-wrap {
+            overflow: hidden;
+            color: white;
+            font-size: 8vw;
+            font-weight: 900;
+            font-style: italic;
+            letter-spacing: -0.05em;
+        }
+
+        #loader-text {
+            transition: transform 1s ease;
+        }
+
+        .loader-active #loader-text {
+            transform: translateY(100%);
+        }
+
+        .loader-active #loader-overlay {
+            transform: translateY(-100%);
+        }
+
+        /* SCROLL PROGRESS */
+        #scroll-bar-container {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 4px;
+            height: 100%;
+            background: rgba(0,0,0,0.02);
+            z-index: 60;
+        }
+
+        #scroll-bar-fill {
+            width: 100%;
+            background: #dc2626;
+            transform-origin: top;
+            transform: scaleY(0);
+        }
+
+        section {
+            position: relative;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .pointer-events-auto {
+            pointer-events: auto;
+        }
+    </style>
+</head>
+<body class="selection:bg-red-600">
+
+    <!-- LOADER -->
+    <div id="loader-overlay">
+        <div id="loader-text-wrap">
+            <div id="loader-text">LUMIX.</div>
+        </div>
+    </div>
+
+    <!-- UI LAYER -->
+    <header class="fixed top-0 w-full p-8 md:p-12 flex justify-between items-center z-50 mix-blend-difference pointer-events-none">
+        <div class="text-xl font-black italic tracking-tighter uppercase text-white pointer-events-auto">
+            LU<span class="text-red-600">MIX</span>
+        </div>
+        <div class="text-[7px] font-bold tracking-[0.5em] uppercase opacity-40 text-white">
+            Orbit V2.3 PRECISE
+        </div>
+    </header>
+
+    <canvas id="webgl-canvas"></canvas>
+
+    <main id="main-content">
+        <!-- HERO -->
+        <section class="h-screen flex flex-col justify-center px-10 md:px-24">
+            <div class="max-w-4xl">
+                <h1 id="hero-title" class="text-[10vw] font-black leading-[0.85] tracking-tighter uppercase italic overflow-hidden">
+                    <span class="opacity-0 translate-y-[150%] block">ULTRA</span>
+                    <span class="text-red-600 opacity-0 translate-y-[150%] block">SMOOTH.</span>
+                </h1>
+                <div id="kinetic-line" class="w-0 h-[3px] bg-red-600 mt-8"></div>
+                <p class="text-[9px] font-black tracking-[0.8em] opacity-30 uppercase mt-8 italic"> Cinematic Sequence Active</p>
+            </div>
+        </section>
+
+        <!-- AERO SYNC -->
+        <section class="h-screen flex items-center justify-end px-10 md:px-24 reveal-section">
+            <div class="max-w-md text-right content-wrap opacity-0">
+                <h2 class="text-5xl font-black italic uppercase tracking-tighter mb-6 leading-none">
+                    AERO <span class="text-red-600 text-6xl">SYNC.</span>
+                </h2>
+                <p class="text-black/40 text-[11px] font-bold uppercase tracking-widest leading-relaxed border-r-4 border-red-600 pr-6">
+                    Camera orbits at high inertia lerp speeds. Precise 45 degree displacement ensures full structural visibility.
+                </p>
+            </div>
+        </section>
+
+        <!-- NEURAL LIFT -->
+        <section class="h-screen flex items-center px-10 md:px-24 reveal-section">
+            <div class="max-w-md content-wrap opacity-0">
+                <h2 class="text-5xl font-black italic uppercase tracking-tighter mb-6 leading-none">
+                    NEURAL <span class="text-red-600 text-6xl">LIFT.</span>
+                </h2>
+                <p class="text-black/40 text-[11px] font-bold uppercase tracking-widest leading-relaxed border-l-4 border-red-600 pl-6">
+                    Adaptive tracking focus. Deep rotations allow for inspection of the hybrid composite chassis.
+                </p>
+            </div>
+        </section>
+
+        <!-- CTA -->
+        <section class="h-screen flex flex-col items-center justify-center text-center">
+            <h2 class="text-[15vw] font-black italic uppercase tracking-tighter leading-none mb-12 opacity-5">LUMIX</h2>
+            <button class="pointer-events-auto px-20 py-8 bg-black text-white font-black uppercase tracking-[1em] text-[10px] hover:bg-red-600 transition-all duration-700 rounded-full hover:scale-110 shadow-[0_20px_50px_rgba(255,0,0,0.2)]">
+                PRE ORDER
+            </button>
+        </section>
+    </main>
+
+    <footer class="p-12 text-[7px] font-bold uppercase tracking-[1em] opacity-20 text-center">
+        LUMIX DESIGNED FOR THE ELITE 2026
+    </footer>
+
+    <div id="scroll-bar-container">
+        <div id="scroll-bar-fill"></div>
+    </div>
+
+    <script>
+
+        gsap.registerPlugin(ScrollTrigger);
+
+        const lenis = new Lenis({
+            duration: 2.5,
+            lerp: 0.035, 
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+            smoothWheel: true,
+            wheelMultiplier: 0.9,
+        });
+
+        function raf(time) {
+            lenis.raf(time);
+            requestAnimationFrame(raf);
+        }
+        requestAnimationFrame(raf);
+
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0xffffff);
+
+        const camera = new THREE.PerspectiveCamera(22, window.innerWidth / window.innerHeight, 0.1, 2000);
+        camera.position.set(0, 180, 1000); 
+
+        const renderer = new THREE.WebGLRenderer({
+            canvas: document.querySelector('#webgl-canvas'),
+            antialias: true,
+            alpha: true,
+            powerPreference: "high-performance"
+        });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+        scene.add(new THREE.AmbientLight(0xffffff, 0.8));
+        const pointLight = new THREE.PointLight(0xff0000, 2, 100);
+        pointLight.position.set(10, 10, 10);
+        scene.add(pointLight);
+
+        const modelGroup = new THREE.Group();
+        scene.add(modelGroup);
+
+        const stealthMat = new THREE.MeshStandardMaterial({ color: 0x050505, metalness: 1, roughness: 0.1 });
+        const glowRed = new THREE.MeshStandardMaterial({ 
+            color: 0xff0000, emissive: 0xff0000, emissiveIntensity: 5 
+        });
+
+        const createCup = (x) => {
+            const g = new THREE.Group();
+            
+            const body = new THREE.Mesh(new THREE.CapsuleGeometry(1.6, 2, 32, 64), stealthMat);
+            body.rotation.y = Math.PI / 2;
+            body.scale.set(1, 1, 0.8);
+
+            const logo = new THREE.Group();
+            const v = new THREE.Mesh(new THREE.BoxGeometry(0.15, 1, 0.15), glowRed);
+            const h = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.15, 0.15), glowRed);
+            h.position.set(0.18, -0.42, 0);
+            logo.add(v, h);
+            logo.position.set(x > 0 ? 1.05 : -1.05, 0, 0);
+            logo.rotation.y = x > 0 ? Math.PI/2 : -Math.PI/2;
+
+            const ring = new THREE.Mesh(new THREE.TorusGeometry(1.75, 0.04, 16, 100), glowRed);
+            ring.rotation.y = Math.PI/2;
+            ring.position.x = x > 0 ? -0.2 : 0.2;
+
+            g.add(body, logo, ring);
+            g.position.x = x;
+            return g;
+        };
+
+        modelGroup.add(createCup(-5.2), createCup(5.2));
+        
+        const bandCurve = new THREE.QuadraticBezierCurve3(
+            new THREE.Vector3(-5.2, 3, 0), 
+            new THREE.Vector3(0, 12, 0), 
+            new THREE.Vector3(5.2, 3, 0)
+        );
+        modelGroup.add(new THREE.Mesh(new THREE.TubeGeometry(bandCurve, 64, 0.7, 32, false), stealthMat));
+
+        const setupScrollAnimations = () => {
+            const tl = gsap.timeline({
+                scrollTrigger: {
+                    trigger: "body",
+                    start: "top top",
+                    end: "bottom bottom",
+                    scrub: 2, 
+                }
+            });
+
+            tl.to(modelGroup.rotation, { x: 0.45, y: -Math.PI * 0.45, ease: "power1.inOut" }, "s1")
+              .to(camera.position, { y: 18, z: 48, ease: "power1.inOut" }, "s1");
+
+            tl.to(modelGroup.rotation, { x: Math.PI / 1.45, y: Math.PI * 0.75, ease: "power1.inOut" }, "s2")
+              .to(camera.position, { y: -12, z: 45, ease: "power1.inOut" }, "s2");
+
+            tl.to(modelGroup.rotation, { x: 0.55, y: -Math.PI * 1.15, ease: "power1.inOut" }, "s3")
+              .to(camera.position, { y: 20, z: 50, ease: "power1.inOut" }, "s3");
+
+            tl.to(camera.position, { y: 10, z: 75, ease: "power1.inOut" }, "s4")
+              .to(modelGroup.rotation, { x: 0, y: Math.PI * 2.5, ease: "power1.inOut" }, "s4");
+
+            gsap.to("#scroll-bar-fill", {
+                scaleY: 1,
+                ease: "none",
+                scrollTrigger: { scrub: 0.1 }
+            });
+        };
+
+        const runIntro = () => {
+            document.body.classList.add('loader-active');
+            const introTl = gsap.timeline();
+            
+            introTl.to(camera.position, { y: 12, z: 55, duration: 4, ease: "expo.out" }, 0.5);
+
+            introTl.to("#hero-title span", {
+                y: 0,
+                opacity: 1,
+                stagger: 0.1,
+                duration: 2,
+                ease: "expo.out"
+            }, 1);
+
+            introTl.to("#kinetic-line", { width: "100%", duration: 2, ease: "power4.inOut" }, 1.2);
+
+            introTl.add(() => setupScrollAnimations());
+        };
+
+        gsap.utils.toArray('.reveal-section').forEach((section) => {
+            gsap.to(section.querySelector('.content-wrap'), {
+                scrollTrigger: {
+                    trigger: section,
+                    start: "top 90%",
+                    end: "top 40%",
+                    scrub: 1,
+                },
+                y: -60,
+                opacity: 1,
+                ease: "power2.out"
+            });
+            gsap.set(section.querySelector('.content-wrap'), { y: 0, opacity: 0 });
+        });
+
+        const animate = () => {
+            camera.lookAt(0, 0, 0);
+            modelGroup.position.y = Math.sin(Date.now() * 0.0006 * 1.2) * 0.2;
+            renderer.render(scene, camera);
+            requestAnimationFrame(animate);
+        };
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            ScrollTrigger.refresh();
+        });
+
+        window.onload = () => {
+            animate();
+            setTimeout(runIntro, 1000);
+        };
+    </script>
+</body>
+</html>
