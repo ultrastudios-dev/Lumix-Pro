@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LUMIX CRIMSON PRO V2.6</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,600&family=Hanken+Grotesk:wght@300;400;900&display=swap" rel="stylesheet">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.152.2/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://unpkg.com/lenis@1.1.18/dist/lenis.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        :root { --bg: #ffffff; --text: #050505; --accent: #dc2626; }
+        body { background-color: var(--bg); color: var(--text); font-family: 'Hanken Grotesk', sans-serif; margin: 0; overflow-x: hidden; -webkit-font-smoothing: antialiased; }
+        .serif-italic { font-family: 'Cormorant Garamond', serif; font-style: italic; }
+        canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; z-index: 1; pointer-events: none; }
+        
+        #loader { position: fixed; inset: 0; background: #000; z-index: 1000; display: flex; align-items: center; justify-content: center; flex-direction: column; }
+        #loader-text { color: white; font-size: 1.8rem; font-weight: 900; letter-spacing: 0.6em; transform: translateY(110%); }
+        
+        .section-content { position: relative; z-index: 10; min-height: 160vh; display: flex; align-items: center; padding: 0 10%; pointer-events: none; }
+        
+        .hero-title { 
+            font-size: clamp(2rem, 6.5vw, 5.2rem); 
+            line-height: 0.9; 
+            font-weight: 900; 
+            letter-spacing: -0.03em; 
+            background: linear-gradient(135deg, #000 30%, #dc2626 100%); 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+        }
+        
+        .sub-text {
+            font-size: clamp(0.7rem, 1.8vw, 0.85rem);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            line-height: 1.7;
+            opacity: 0.5;
+        }
+
+        header { 
+            background: transparent;
+            padding: 2rem 2.5rem !important;
+        }
+
+        .logo-container {
+            color: #000;
+            font-weight: 900;
+            font-size: clamp(1.4rem, 3.5vw, 1.8rem);
+            letter-spacing: -0.02em;
+            line-height: 1;
+            display: flex;
+            align-items: baseline;
+            gap: 0;
+        }
+        .mix-text-crimson {
+            background: linear-gradient(to bottom, #ff1a3d 0%, #9e001d 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-style: italic;
+            padding-right: 0.25em; 
+            display: inline-block;
+        }
+
+        .btn-luxe { 
+            background: #000; color: #fff; padding: 1rem 2.5rem; 
+            font-size: clamp(0.6rem, 1.2vw, 0.65rem); font-weight: 900; letter-spacing: 0.35em; 
+            text-transform: uppercase; border: 1px solid rgba(220,38,38,0.2); 
+            pointer-events: auto; cursor: pointer; border-radius: 99px; 
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1); 
+        }
+        .btn-luxe:hover { background: #dc2626; transform: scale(1.05); box-shadow: 0 15px 30px rgba(220,38,38,0.15); }
+        
+        .reveal-element { opacity: 0; transform: translateY(20px); }
+    </style>
+</head>
+<body>
+
+    <div id="loader">
+        <div style="overflow: hidden; height: 2.5rem;"><div id="loader-text">LUMIX</div></div>
+        <div class="w-32 h-[1px] bg-white/10 mt-4 relative overflow-hidden">
+            <div id="loader-bar" class="absolute inset-0 bg-red-600 scale-x-0 origin-left"></div>
+        </div>
+    </div>
+
+    <header class="fixed top-0 left-0 w-full flex justify-between items-center z-50 pointer-events-none">
+        <div class="logo-container pointer-events-auto">
+            <span>LU</span><span class="mix-text-crimson">MIX</span>
+        </div>
+        <div class="hidden md:block text-[7px] font-bold tracking-[0.4em] uppercase opacity-40 text-black">
+            V2.6 Global Edition
+        </div>
+    </header>
+
+    <canvas id="webgl-canvas"></canvas>
+
+    <main id="content">
+        <section class="section-content">
+            <div class="max-w-3xl">
+                <span class="reveal-element text-[9px] font-bold tracking-[0.5em] uppercase mb-5 block opacity-30">Sonic Architecture</span>
+                <h1 class="hero-title mb-6 reveal-element">
+                    Elegance <br>
+                    <span class="serif-italic font-normal italic lowercase" style="font-size: 0.85em;">wrapped in</span> <br>
+                    <span class="mix-text-crimson italic">Crimson.</span>
+                </h1>
+            </div>
+        </section>
+
+        <section class="section-content justify-end">
+            <div class="max-w-md text-right">
+                <span class="reveal-element text-[9px] font-black tracking-[0.4em] text-red-600 uppercase mb-3 block">Engineering</span>
+                <h2 class="text-3xl md:text-5xl font-black mb-5 leading-none italic uppercase">TECHNICAL <br><span class="serif-italic font-normal text-black italic lowercase text-2xl md:text-4xl">sovereignty.</span></h2>
+                <p class="reveal-element sub-text border-r-2 border-red-600 pr-5">
+                    A cinematic deconstruction revealing every internal component in ultra high fidelity.
+                </p>
+            </div>
+        </section>
+
+        <section class="section-content">
+            <div class="max-w-xs">
+                <h2 class="text-3xl md:text-4xl font-black mb-5 leading-none italic uppercase">Absolute <br><span class="serif-italic font-normal text-red-600 italic lowercase">comfort.</span></h2>
+                <p class="reveal-element sub-text border-l-2 border-black pl-5">
+                    Zero gravity ergonomics tailored for the most discerning audiophile.
+                </p>
+            </div>
+        </section>
+
+        <section class="h-screen flex flex-col items-center justify-center text-center relative z-10 px-6">
+            <h3 class="text-2xl md:text-4xl font-light mb-10 tracking-tighter serif-italic italic">The art of sound.</h3>
+            <button class="btn-luxe">Pre order Experience</button>
+        </section>
+    </main>
+
+    <script>
+        const lenis = new Lenis({ duration: 2.0, lerp: 0.05, smoothWheel: true });
+        function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
+        requestAnimationFrame(raf);
+
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0xffffff);
+
+        const camera = new THREE.PerspectiveCamera(24, window.innerWidth / window.innerHeight, 4.0, 2000);
+        camera.position.set(0, 30, 140);
+
+        const renderer = new THREE.WebGLRenderer({
+            canvas: document.querySelector('#webgl-canvas'),
+            antialias: true,
+            alpha: true
+        });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+        scene.add(new THREE.AmbientLight(0xffffff, 0.9));
+        const light1 = new THREE.DirectionalLight(0xffffff, 1.4);
+        light1.position.set(40, 60, 50);
+        scene.add(light1);
+        
+        const accentLight = new THREE.PointLight(0xff0033, 2.8, 100);
+        accentLight.position.set(-35, 25, 45);
+        scene.add(accentLight);
+
+        const modelContainer = new THREE.Group();
+        const leftEar = new THREE.Group();
+        const rightEar = new THREE.Group();
+        scene.add(modelContainer);
+
+        const matHousing = new THREE.MeshPhysicalMaterial({ 
+            color: 0x040404, roughness: 0.05, metalness: 0.95, clearcoat: 1, side: THREE.DoubleSide 
+        });
+        const matCushion = new THREE.MeshStandardMaterial({ color: 0x080808, roughness: 0.9 });
+        const matDriver = new THREE.MeshStandardMaterial({ 
+            color: 0x111111, emissive: 0xdc2626, emissiveIntensity: 5 
+        });
+
+        const createEar = (isLeft) => {
+            const grp = isLeft ? leftEar : rightEar;
+            const side = isLeft ? -1 : 1;
+            const shellPts = [
+                new THREE.Vector2(0, -2.6),
+                new THREE.Vector2(2.5, -2.4),
+                new THREE.Vector2(3.4, 0),
+                new THREE.Vector2(3.0, 2.0),
+                new THREE.Vector2(0, 2.5)
+            ];
+            const shell = new THREE.Mesh(new THREE.LatheGeometry(shellPts, 64), matHousing);
+            shell.name = "shell";
+            shell.rotation.z = isLeft ? -Math.PI / 2 : Math.PI / 2;
+            const cushion = new THREE.Mesh(new THREE.TorusGeometry(2.5, 0.9, 32, 64), matCushion);
+            cushion.name = "cushion";
+            cushion.rotation.y = Math.PI / 2;
+            cushion.position.x = isLeft ? 2.6 : -2.6;
+            const driver = new THREE.Mesh(new THREE.CylinderGeometry(1.6, 2.0, 0.8, 48), matDriver);
+            driver.name = "driver";
+            driver.rotation.z = Math.PI / 2;
+            driver.position.x = isLeft ? 0.9 : -0.9;
+            grp.add(shell, cushion, driver);
+            grp.position.x = side * 9.0;
+            modelContainer.add(grp);
+        };
+
+        createEar(true);
+        createEar(false);
+
+        const bandCurve = new THREE.QuadraticBezierCurve3(
+            new THREE.Vector3(-9.0, 1.5, 0), new THREE.Vector3(0, 18.5, 0), new THREE.Vector3(9.0, 1.5, 0)
+        );
+        modelContainer.add(new THREE.Mesh(new THREE.TubeGeometry(bandCurve, 100, 1.6, 32, false), matHousing));
+
+        gsap.registerPlugin(ScrollTrigger);
+        const masterTl = gsap.timeline({
+            scrollTrigger: {
+                trigger: "body",
+                start: "top top",
+                end: "bottom bottom",
+                scrub: 2.5,
+            }
+        });
+
+        masterTl.to(camera.position, { x: 35, y: 15, z: 110, ease: "power2.inOut" }, 0)
+                .to(modelContainer.rotation, { y: Math.PI * 0.25, x: 0.1 }, 0);
+        masterTl.to(camera.position, { x: -45, y: 0, z: 80, ease: "power3.inOut" }, 0.3)
+                .to(modelContainer.rotation, { y: Math.PI * 0.6, x: -0.15, ease: "power3.inOut" }, 0.3);
+        masterTl.to(leftEar.getObjectByName("cushion").position, { x: 11, ease: "expo.out" }, 0.3)
+                .to(leftEar.getObjectByName("driver").position, { x: 6, ease: "expo.out" }, 0.3)
+                .to(leftEar.getObjectByName("shell").position, { x: -4.5, ease: "expo.out" }, 0.3);
+        masterTl.to(camera.position, { x: 0, y: 60, z: 95, ease: "power2.inOut" }, 0.6)
+                .to(modelContainer.rotation, { y: Math.PI * 1.35, x: 0.55 }, 0.6);
+        masterTl.to(leftEar.getObjectByName("cushion").position, { x: 2.6 }, 0.6)
+                .to(leftEar.getObjectByName("driver").position, { x: 0.9 }, 0.6)
+                .to(leftEar.getObjectByName("shell").position, { x: 0 }, 0.6);
+        masterTl.to(camera.position, { x: 45, y: -25, z: 105, ease: "power2.inOut" }, 0.85)
+                .to(modelContainer.rotation, { y: Math.PI * 2, x: -0.15 }, 0.85);
+        masterTl.to(camera.position, { x: 0, y: 0, z: 140, ease: "power2.inOut" }, 1.0)
+                .to(modelContainer.rotation, { y: Math.PI * 2.5, x: 0 }, 1.0);
+
+        window.onload = () => {
+            const intro = gsap.timeline();
+            intro.to("#loader-text", { y: 0, duration: 1.2, ease: "expo.out" });
+            intro.to("#loader-bar", { scaleX: 1, duration: 1, ease: "power2.inOut" }, "-=0.6");
+            intro.to("#loader", { yPercent: -100, duration: 1.5, ease: "expo.inOut" });
+            intro.to(".reveal-element", { opacity: 1, y: 0, stagger: 0.15, ease: "expo.out" }, "-=0.8");
+
+            const animate = () => {
+                camera.lookAt(0, 0, 0);
+                modelContainer.position.y = Math.sin(Date.now() * 0.0007) * 0.25;
+                renderer.render(scene, camera);
+                requestAnimationFrame(animate);
+            };
+            animate();
+        };
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>
