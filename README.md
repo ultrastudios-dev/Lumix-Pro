@@ -16,5 +16,5 @@ Technical Focus
 
 Signature
 **DEVELOPER:** Ultra Studios  
-**VERSION:** 2.2  
+**VERSION:** 2.6
 **STATUS:** DEPLOYED  
