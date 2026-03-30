@@ -7,7 +7,7 @@ This project is a high fidelity 3D kinetic showcase for the Lumix Pro Headset se
 Purpose & Motivation
 The creation of **Lumix Pro 3D** serves two primary goals:
 1. **Cinematic Precision:** To replicate the mechanical feel of a high end camera body and lens within a digital interface.
-2. **Hardware Optimization:** To prove that professional grade 3D visuals can be rendered and optimized on legacy hardware ( Pentium / 2GB RAM)
+2. **Purpose:** To show what a modern product website can look and feel like fast, visual, and built to impress.
 
 Technical Focus
 - **Kinetic Motion:** Seamless 360 degree product interaction.
